@@ -1,0 +1,126 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: showcase-postgres
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_DB: showcase_db
+      POSTGRES_USER: showcase_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    networks:
+      - showcase-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U showcase_user -d showcase_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    container_name: showcase-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports:
+      - "9000:9000"  # API
+      - "9001:9001"  # Console
+    networks:
+      - showcase-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio-setup:
+    image: minio/mc:latest
+    container_name: showcase-minio-setup
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add myminio http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD};
+      /usr/bin/mc mb -p myminio/${MINIO_BUCKET_SHOWCASES};
+      /usr/bin/mc mb -p myminio/${MINIO_BUCKET_AVATARS};
+      /usr/bin/mc anonymous set download myminio/${MINIO_BUCKET_SHOWCASES};
+      /usr/bin/mc anonymous set download myminio/${MINIO_BUCKET_AVATARS};
+      exit 0;
+      "
+    networks:
+      - showcase-network
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: showcase-api
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      ASPNETCORE_URLS: http://+:5000
+      ConnectionStrings__Default: ${DB_CONNECTION}
+      Storage__Endpoint: ${MINIO_ENDPOINT}
+      Storage__AccessKey: ${MINIO_ROOT_USER}
+      Storage__SecretKey: ${MINIO_ROOT_PASSWORD}
+      Storage__BucketShowcases: ${MINIO_BUCKET_SHOWCASES}
+      Storage__BucketAvatars: ${MINIO_BUCKET_AVATARS}
+      Jwt__Secret: ${JWT_SECRET}
+      Jwt__Issuer: ${JWT_ISSUER}
+      Jwt__Audience: ${JWT_AUDIENCE}
+      Jwt__ExpiryMinutes: ${JWT_EXPIRY_MINUTES}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    ports:
+      - "5000:5000"
+    networks:
+      - showcase-network
+    volumes:
+      - ./backend/src:/app/src
+      - backend_obj:/app/obj
+      - backend_bin:/app/bin
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development
+    container_name: showcase-frontend
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: ${VITE_API_URL}
+    ports:
+      - "3000:3000"
+    networks:
+      - showcase-network
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - frontend_node_modules:/app/node_modules
+    depends_on:
+      - api
+
+networks:
+  showcase-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  minio_data:
+  backend_obj:
+  backend_bin:
+  frontend_node_modules:
