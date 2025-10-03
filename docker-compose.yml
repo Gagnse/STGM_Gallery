@@ -1,10 +1,12 @@
 version: '3.8'
 
 services:
+  # Local PostgreSQL (optional - only used if USE_HEROKU_DB=false)
   postgres:
     image: postgres:15-alpine
     container_name: showcase-postgres
     restart: unless-stopped
+    profiles: ["local-db"]  # Only starts with --profile local-db
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/init:/docker-entrypoint-initdb.d
@@ -71,7 +73,9 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       ASPNETCORE_URLS: http://+:5000
+      USE_HEROKU_DB: ${USE_HEROKU_DB}
       ConnectionStrings__Default: ${DB_CONNECTION}
+      ConnectionStrings__Heroku: ${HEROKU_DATABASE_URL}
       Storage__Endpoint: ${MINIO_ENDPOINT}
       Storage__AccessKey: ${MINIO_ROOT_USER}
       Storage__SecretKey: ${MINIO_ROOT_PASSWORD}
@@ -82,8 +86,6 @@ services:
       Jwt__Audience: ${JWT_AUDIENCE}
       Jwt__ExpiryMinutes: ${JWT_EXPIRY_MINUTES}
     depends_on:
-      postgres:
-        condition: service_healthy
       minio:
         condition: service_healthy
     ports:

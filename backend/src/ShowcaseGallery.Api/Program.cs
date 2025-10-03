@@ -3,6 +3,21 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddOpenApi();
 
+// Configure database connection
+var useHerokuDb = builder.Configuration.GetValue<bool>("USE_HEROKU_DB");
+var connectionString = useHerokuDb
+    ? builder.Configuration.GetConnectionString("Heroku")
+    : builder.Configuration.GetConnectionString("Default");
+
+// Log which database is being used (helpful for debugging)
+builder.Logging.AddConsole();
+Console.WriteLine($"Database Mode: {(useHerokuDb ? "Heroku Cloud" : "Local Docker")}");
+Console.WriteLine($"Connection String: {connectionString?.Substring(0, Math.Min(50, connectionString?.Length ?? 0))}...");
+
+// TODO: Add database context here when implementing EF Core
+// builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//     options.UseNpgsql(connectionString));
+
 // Add CORS
 builder.Services.AddCors(options =>
 {
@@ -29,7 +44,8 @@ app.MapGet("/health", () => Results.Ok(new
 {
     status = "healthy",
     timestamp = DateTime.UtcNow,
-    environment = app.Environment.EnvironmentName
+    environment = app.Environment.EnvironmentName,
+    database = useHerokuDb ? "Heroku PostgreSQL" : "Local PostgreSQL"
 }))
 .WithName("HealthCheck");
 
