@@ -4,16 +4,18 @@ WORKDIR /app
 
 # Copy csproj and restore dependencies
 COPY src/ShowcaseGallery.Api/*.csproj ./src/ShowcaseGallery.Api/
-RUN dotnet restore ./src/ShowcaseGallery.Api/ShowcaseGallery.Api.csproj
+WORKDIR /app/src/ShowcaseGallery.Api
+RUN dotnet restore --verbosity detailed
 
 # Copy source code
+WORKDIR /app
 COPY src/ ./src/
 
 # Set working directory to the project
 WORKDIR /app/src/ShowcaseGallery.Api
 
-# Use watch mode for development
-ENTRYPOINT ["dotnet", "watch", "run", "--no-restore", "--urls", "http://+:5000"]
+# Use watch mode for development (remove --no-restore flag)
+ENTRYPOINT ["dotnet", "watch", "run", "--urls", "http://+:5000"]
 
 # Build stage
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build

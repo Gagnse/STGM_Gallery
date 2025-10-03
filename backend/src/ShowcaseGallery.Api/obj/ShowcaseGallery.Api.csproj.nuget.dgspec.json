@@ -1,24 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\sgagnon\\Documents\\GitHub\\STGM_Gallery\\backend\\src\\ShowcaseGallery.Api\\ShowcaseGallery.Api.csproj": {}
+    "/app/src/ShowcaseGallery.Api/ShowcaseGallery.Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\sgagnon\\Documents\\GitHub\\STGM_Gallery\\backend\\src\\ShowcaseGallery.Api\\ShowcaseGallery.Api.csproj": {
+    "/app/src/ShowcaseGallery.Api/ShowcaseGallery.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\sgagnon\\Documents\\GitHub\\STGM_Gallery\\backend\\src\\ShowcaseGallery.Api\\ShowcaseGallery.Api.csproj",
+        "projectUniqueName": "/app/src/ShowcaseGallery.Api/ShowcaseGallery.Api.csproj",
         "projectName": "ShowcaseGallery.Api",
-        "projectPath": "C:\\Users\\sgagnon\\Documents\\GitHub\\STGM_Gallery\\backend\\src\\ShowcaseGallery.Api\\ShowcaseGallery.Api.csproj",
-        "packagesPath": "C:\\Users\\sgagnon\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\sgagnon\\Documents\\GitHub\\STGM_Gallery\\backend\\src\\ShowcaseGallery.Api\\obj\\",
+        "projectPath": "/app/src/ShowcaseGallery.Api/ShowcaseGallery.Api.csproj",
+        "packagesPath": "/root/.nuget/packages/",
+        "outputPath": "/app/src/ShowcaseGallery.Api/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\sgagnon\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/root/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
         "frameworks": {
           "net9.0": {
             "targetAlias": "net9.0",
@@ -53,11 +56,15 @@
               "target": "Package",
               "version": "[9.0.0, )"
             },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.11, )"
+            },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[9.0.0, )"
+              "version": "[8.0.11, )"
             },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
@@ -87,7 +94,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.305/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
