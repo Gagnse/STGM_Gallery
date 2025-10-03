@@ -13,14 +13,30 @@ builder.Services.AddOpenApi();
 
 // Configure database connection
 var useHerokuDb = builder.Configuration.GetValue<bool>("USE_HEROKU_DB");
-var connectionString = useHerokuDb
-    ? builder.Configuration.GetConnectionString("Heroku")
-    : builder.Configuration.GetConnectionString("Default");
+string connectionString;
+
+if (useHerokuDb)
+{
+    // Get Heroku DATABASE_URL and convert to Npgsql format
+    var herokuConnectionUrl = builder.Configuration.GetConnectionString("Heroku");
+    
+    if (string.IsNullOrEmpty(herokuConnectionUrl))
+    {
+        throw new InvalidOperationException("Heroku connection string not configured. Check ConnectionStrings:Heroku in appsettings.json or HEROKU_DATABASE_URL environment variable.");
+    }
+    
+    connectionString = ConvertHerokuConnectionString(herokuConnectionUrl);
+}
+else
+{
+    connectionString = builder.Configuration.GetConnectionString("Default")
+        ?? throw new InvalidOperationException("Default connection string not configured");
+}
 
 // Log which database is being used
 builder.Logging.AddConsole();
 Console.WriteLine($"Database Mode: {(useHerokuDb ? "Heroku Cloud" : "Local Docker")}");
-Console.WriteLine($"Connection String: {connectionString?.Substring(0, Math.Min(50, connectionString?.Length ?? 0))}...");
+Console.WriteLine($"Connection String: {MaskConnectionString(connectionString)}");
 
 // Add Entity Framework Core with PostgreSQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -73,6 +89,25 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Apply migrations automatically for Heroku
+if (useHerokuDb)
+{
+    try
+    {
+        using var scope = app.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        
+        Console.WriteLine("Applying database migrations...");
+        db.Database.Migrate();
+        Console.WriteLine("Database migrations applied successfully.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error applying migrations: {ex.Message}");
+        throw;
+    }
+}
+
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
@@ -96,3 +131,30 @@ app.MapGet("/health", () => Results.Ok(new
 .WithName("HealthCheck");
 
 app.Run();
+
+// Helper method to convert Heroku connection string to Npgsql format
+static string ConvertHerokuConnectionString(string herokuConnectionUrl)
+{
+    // Heroku format: postgres://user:password@host:port/database
+    // Npgsql format: Host=host;Port=port;Database=database;Username=user;Password=password;SSL Mode=Require;Trust Server Certificate=true
+    
+    var uri = new Uri(herokuConnectionUrl);
+    var userInfo = uri.UserInfo.Split(':');
+    
+    return $"Host={uri.Host};Port={uri.Port};Database={uri.LocalPath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+}
+
+// Helper method to mask sensitive information in connection string for logging
+static string MaskConnectionString(string connectionString)
+{
+    var parts = connectionString.Split(';');
+    var masked = parts.Select(part =>
+    {
+        if (part.StartsWith("Password=", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Password=***";
+        }
+        return part;
+    });
+    return string.Join(";", masked);
+}
