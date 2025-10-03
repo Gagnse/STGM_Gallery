@@ -1,40 +1,36 @@
 # Development stage
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS development
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS development
 WORKDIR /app
 
-# Install dotnet-ef tool for migrations
-RUN dotnet tool install --global dotnet-ef
-ENV PATH="$PATH:/root/.dotnet/tools"
-
 # Copy csproj and restore dependencies
-COPY src/*.csproj ./src/
-RUN dotnet restore ./src/*.csproj
+COPY src/ShowcaseGallery.Api/*.csproj ./src/ShowcaseGallery.Api/
+RUN dotnet restore ./src/ShowcaseGallery.Api/ShowcaseGallery.Api.csproj
 
 # Copy source code
-COPY . .
+COPY src/ ./src/
 
-# Set working directory
-WORKDIR /app/src
+# Set working directory to the project
+WORKDIR /app/src/ShowcaseGallery.Api
 
 # Use watch mode for development
 ENTRYPOINT ["dotnet", "watch", "run", "--no-restore", "--urls", "http://+:5000"]
 
 # Build stage
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-COPY src/*.csproj ./
-RUN dotnet restore
+COPY src/ShowcaseGallery.Api/*.csproj ./ShowcaseGallery.Api/
+RUN dotnet restore ./ShowcaseGallery.Api/ShowcaseGallery.Api.csproj
 
-COPY src/. .
-RUN dotnet build -c Release -o /app/build
+COPY src/ShowcaseGallery.Api/. ./ShowcaseGallery.Api/
+RUN dotnet build ./ShowcaseGallery.Api/ShowcaseGallery.Api.csproj -c Release -o /app/build
 
 # Publish stage
 FROM build AS publish
-RUN dotnet publish -c Release -o /app/publish
+RUN dotnet publish ./ShowcaseGallery.Api/ShowcaseGallery.Api.csproj -c Release -o /app/publish
 
 # Final production stage
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS production
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS production
 WORKDIR /app
 
 # Install curl for health checks
