@@ -1,0 +1,31 @@
+/* Main Layout Structure */
+.main-content {
+    margin-left: var(--sidebar-width);
+    min-height: 100vh;
+}
+
+.tab-header {
+    padding: var(--spacing-2xl) var(--spacing-3xl) var(--spacing-xl) var(--spacing-3xl);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.tab-title {
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+/* Responsive Layout */
+@media (max-width: 768px) {
+    :root {
+        --sidebar-width: 200px;
+    }
+    
+    .main-content {
+        margin-left: var(--sidebar-width);
+    }
+    
+    .tab-header {
+        padding: var(--spacing-xl);
+    }
+}

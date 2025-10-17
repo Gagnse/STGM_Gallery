@@ -1,21 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\sgagnon\\Documents\\GitHub\\STGM_Gallery\\backend\\src\\ShowcaseGallery.Api\\ShowcaseGallery.Api.csproj": {}
+    "/app/src/ShowcaseGallery.Api/ShowcaseGallery.Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\sgagnon\\Documents\\GitHub\\STGM_Gallery\\backend\\src\\ShowcaseGallery.Api\\ShowcaseGallery.Api.csproj": {
+    "/app/src/ShowcaseGallery.Api/ShowcaseGallery.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\sgagnon\\Documents\\GitHub\\STGM_Gallery\\backend\\src\\ShowcaseGallery.Api\\ShowcaseGallery.Api.csproj",
+        "projectUniqueName": "/app/src/ShowcaseGallery.Api/ShowcaseGallery.Api.csproj",
         "projectName": "ShowcaseGallery.Api",
-        "projectPath": "C:\\Users\\sgagnon\\Documents\\GitHub\\STGM_Gallery\\backend\\src\\ShowcaseGallery.Api\\ShowcaseGallery.Api.csproj",
-        "packagesPath": "C:\\tmp\\nuget-packages",
-        "outputPath": "C:\\Users\\sgagnon\\Documents\\GitHub\\STGM_Gallery\\backend\\src\\ShowcaseGallery.Api\\obj\\",
+        "projectPath": "/app/src/ShowcaseGallery.Api/ShowcaseGallery.Api.csproj",
+        "packagesPath": "/root/.nuget/packages/",
+        "outputPath": "/app/src/ShowcaseGallery.Api/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\sgagnon\\Documents\\GitHub\\STGM_Gallery\\backend\\NuGet.Config",
-          "C:\\Users\\sgagnon\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/root/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -95,7 +94,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.306/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
