@@ -1,17 +1,17 @@
 /* Masonry Gallery Component */
 .gallery-container {
-    padding: var(--spacing-2xl) var(--spacing-3xl) var(--spacing-3xl) var(--spacing-3xl);
+    padding: var(--spacing-xxs) var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
 }
 
 .masonry-grid {
     column-count: 4;
-    column-gap: var(--spacing-md);
+    column-gap: var(--spacing-xxs);
 }
 
 /* Masonry Item */
 .masonry-item {
     break-inside: avoid;
-    margin-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-xxs);
     position: relative;
     overflow: hidden;
     border-radius: 8px;

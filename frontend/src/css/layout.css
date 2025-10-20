@@ -5,12 +5,12 @@
 }
 
 .tab-header {
-    padding: var(--spacing-2xl) var(--spacing-3xl) var(--spacing-xl) var(--spacing-3xl);
+    padding: var(--spacing-4xl) var(--spacing-null) var(--spacing-xxs) var(--spacing-xl);
     border-bottom: 1px solid var(--color-border);
 }
 
 .tab-title {
-    font-size: 32px;
+    font-size: 24px;
     font-weight: 600;
     color: var(--color-text-primary);
 }
